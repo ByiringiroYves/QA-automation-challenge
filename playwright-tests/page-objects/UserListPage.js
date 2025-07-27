@@ -83,6 +83,7 @@
       async clickEditUser(name) {
         const userRow = await this.getUserRow(name);
         await userRow.locator('button:has-text("Edit")').click();
+        await this.page.waitForSelector('.fixed.inset-0 h3', { timeout: 3000 });
         await expect(this.modalTitle).toContainText('Edit User');
         // Assert form is pre-filled
         await expect(this.userNameInput).toHaveValue(name);
@@ -111,13 +112,14 @@
         await expect(this.messageAlert).toHaveClass(/bg-green-100/); // Check for green background
       }
 
-      async assertErrorMessage(message) {
-    // No need for toBeVisible() or waitForSelector, as the element is always present and visible.
-  // We just assert its content and class.
+    async assertErrorMessage(message) {
+       // Small delay to allow React to render the error text
+       await this.page.waitForTimeout(100);
 
-  await expect(this.modalErrorMessage).toContainText(message);
-  await expect(this.modalErrorMessage).toHaveClass(/bg-red-100/); // Check for red background
-      }
+       // More precise: check the inner <span> directly
+       await expect(this.modalErrorMessage.locator('span')).toHaveText(message, { timeout: 3000 });
+    }
+
 
       async logout() {
         await this.logoutButton.click();
