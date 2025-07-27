@@ -41,15 +41,36 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Login</h2>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-4 font-sans">
+      {/* Top Bar with REMWASTE Account */}
+      <div className="absolute top-0 left-0 w-full p-4 bg-white border-b border-gray-200 flex justify-between items-center px-8">
+        <span className="text-lg font-semibold text-gray-800">REMWASTE Account</span>
+        {/* Language selector - simplified for now */}
+        <div className="text-sm text-gray-600 flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3 5h12M3 9h12M3 13h12M17 5l-2 2 2 2M17 9l-2 2 2 2M17 13l-2 2 2 2M21 5l-2 2 2 2M21 9l-2 2 2 2M21 13l-2 2 2 2" />
+          </svg>
+          Language: English <span className="ml-1">&#9660;</span>
+        </div>
+      </div>
+
+      <div className="bg-white p-8 pt-12 rounded-lg shadow-md w-full max-w-md mt-16 border border-gray-200">
+        {/* REMWASTE Gov Logo/Text */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-black-700">REMWASTE <span className="text-gray-800">.com</span></h1>
+        </div>
+
+        <h2 className="text-2xl font-semibold text-center text-gray-800 mb-2">Sign in with REMWASTE Account</h2>
+        <p className="text-center text-gray-600 mb-6 text-sm">Please enter your details to continue to <span className="font-medium text-blue-700">REMWASTE Admin</span>.</p>
+
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative text-sm" role="alert">
               <span className="block sm:inline">{error}</span>
             </div>
           )}
+
+          {/* Username Input */}
           <div>
             <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">Username</label>
             <input
@@ -58,30 +79,56 @@ const LoginPage = () => {
               name="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              placeholder="Enter username (e.g., test)"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              placeholder="Enter your username"
               required
             />
           </div>
+
+          {/* Password Input */}
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              placeholder="Enter password (e.g., password123)"
-              required
-            />
+            <div className="relative">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm pr-10"
+                placeholder="Enter your password"
+                required
+              />
+              {/* Eye icon - simplified, could add functionality to toggle visibility */}
+              <span className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
+                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              </span>
+            </div>
+            <div className="text-right mt-2">
+              <a href="#" className="text-sm font-medium text-blue-600 hover:text-blue-500">Forgot password?</a>
+            </div>
           </div>
+
+          {/* Sign In Button */}
           <button
             type="submit"
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-lg font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out"
+            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-lg font-semibold text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black transition duration-150 ease-in-out"
           >
             Sign In
           </button>
+
+          {/* Terms of Use and Privacy Policy */}
+          <p className="text-center text-xs text-gray-500 mt-4">
+            By logging-in, you accept the new <a href="#" className="text-blue-600 hover:text-blue-500 font-medium">Terms of use</a> including <a href="#" className="text-blue-600 hover:text-blue-500 font-medium">Privacy Policy</a> of REMWASTE Account.
+          </p>
+
+          {/* Don't have an account? Create Account */}
+          <p className="text-center text-sm text-gray-600 mt-6">
+            Don't have an account? <a href="#" className="font-medium text-blue-600 hover:text-blue-500">Create Account</a>
+          </p>
         </form>
       </div>
     </div>
@@ -105,7 +152,7 @@ const UserForm = ({ user, onClose, onSave }) => {
     }
 
     const newUser = {
-      id: user ? user.id : String(Date.now()), 
+      id: user ? user.id : String(Date.now()), // Simple ID generation
       name,
       email,
       role,
@@ -243,24 +290,27 @@ const UserList = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
-      <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-lg p-6">
+    <div className="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8 font-sans">
+      {/* Top Bar - User Management Title */}
+      <div className="absolute top-0 left-0 w-full p-4 bg-white border-b border-gray-200 flex justify-between items-center px-8">
+        <h2 className="text-xl font-semibold text-gray-800">REMWASTE User Management</h2>
+        <button
+          onClick={logout}
+          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+        >
+          Logout
+        </button>
+      </div>
+
+      <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-lg p-6 mt-20"> {/* Added mt-20 to push content below top bar */}
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-bold text-gray-800">User Management</h2>
-          <div className="flex space-x-3">
-            <button
-              onClick={() => setShowAddUserModal(true)}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-            >
-              Add User
-            </button>
-            <button
-              onClick={logout}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-            >
-              Logout
-            </button>
-          </div>
+          <h3 className="text-2xl font-bold text-gray-800">Users</h3>
+          <button
+            onClick={() => setShowAddUserModal(true)}
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+          >
+            Add User
+          </button>
         </div>
 
         {message && (
@@ -388,16 +438,6 @@ export default function App() {
   return (
     <div className="font-sans antialiased text-gray-900">
       {/* Tailwind CSS CDN */}
-      <script src="https://cdn.tailwindcss.com"></script>
-      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-
-      <style>
-        {`
-          body {
-            font-family: 'Inter', sans-serif;
-          }
-        `}
-      </style>
 
       <AuthContext.Provider value={{ isAuthenticated, currentUser, login, logout }}>
         <UserContext.Provider value={{ users, addUser, updateUser, deleteUser }}>
