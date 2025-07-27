@@ -25,7 +25,11 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); // Clear previous errors
+     if (!username || !password) {
+      setError('Please enter both username and password.'); 
+      return; 
+    }
+
 
     // Simulate API call for login
     const response = await simulateApiCall({
@@ -34,6 +38,7 @@ const LoginPage = () => {
     }, 1000); // Simulate 1 second delay
 
     if (response.success) {
+     // setError(''); 
       login({ username });
     } else {
       setError(response.message);
@@ -63,7 +68,7 @@ const LoginPage = () => {
         <h2 className="text-2xl font-semibold text-center text-gray-800 mb-2">Sign in with REMWASTE Account</h2>
         <p className="text-center text-gray-600 mb-6 text-sm">Please enter your details to continue to <span className="font-medium text-blue-700">REMWASTE Admin</span>.</p>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6" noValidate>
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative text-sm" role="alert">
               <span className="block sm:inline">{error}</span>
@@ -144,12 +149,18 @@ const UserForm = ({ user, onClose, onSave }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setError('');
+
+    // Always clear previous error *before* new validation, but only if it's not the initial render.
+    // This is a common pattern to ensure fresh validation feedback.
+    //setError(''); // Clear at the very start of submission attempt
+    
 
     if (!name || !email) {
       setError('Name and Email are required.');
       return;
     }
+
+    // setError('');
 
     const newUser = {
       id: user ? user.id : String(Date.now()), // Simple ID generation
@@ -166,11 +177,15 @@ const UserForm = ({ user, onClose, onSave }) => {
       <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg">
         <h3 className="text-2xl font-bold text-gray-800 mb-6">{user ? 'Edit User' : 'Add New User'}</h3>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-              <span className="block sm:inline">{error}</span>
-            </div>
-          )}
+        {/* This div will render if 'error' has content, otherwise it will be empty but visible */}
+          <div
+            data-testid="user-form-error-message"
+            role="alert"
+            className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative text-sm"
+          >
+            <span className="block sm:inline">{error}</span> {/* This span will render the error text or be empty */}
+          </div>
+
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Name</label>
             <input
@@ -395,6 +410,7 @@ const UserList = () => {
     </div>
   );
 };
+
 
 // --- Main App Component ---
 export default function App() {
