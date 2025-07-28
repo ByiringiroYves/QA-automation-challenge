@@ -1,84 +1,122 @@
-    // playwright.config.js
-    import { defineConfig, devices } from '@playwright/test';
+// playwright.config.js
 
-    /**
-     * Read environment variables from .env file.
-     * https://github.com/motdotla/dotenv
+import { defineConfig, devices } from '@playwright/test';
+
+/**
+ *  This section allows you to load environment variables from a .env file.
+ * Useful for local development secrets or configuration.
+ * Learn more: https://github.com/motdotla/dotenv
+ */
+// require('dotenv').config();
+
+/**
+ *  This is where you configure Playwright's test runner behavior.
+ * See full options: https://playwright.dev/docs/test-configuration
+ */
+export default defineConfig({
+  //  Define where your test files are located. Playwright will scan this directory.
+  testDir: './playwright-tests/tests', 
+
+  //  Run tests in parallel for faster execution, especially on CI.
+  fullyParallel: true,
+
+  //  Prevent accidental 'test.only' commits from passing CI.
+  forbidOnly: !!process.env.CI,
+
+  //  Retry failed tests on CI to reduce flakiness caused by transient issues.
+  retries: process.env.CI ? 2 : 0,
+
+  //  Control the number of parallel workers on CI for resource management.
+  workers: process.env.CI ? 1 : undefined,
+
+  //  Choose your test reporter. 'html' is great for interactive reports.
+  reporter: 'html', 
+
+  /**
+   *  'use' defines common options for all tests.
+   * This includes the base URL for your application and various test behaviors.
+   */
+  use: {
+    //  This is the base URL for your application. 'await page.goto('/')' will navigate here.
+    baseURL: 'http://localhost:5173/', // Ensure this matches your React app's running URL.
+
+    //  Capture traces for failed tests. Invaluable for debugging flaky tests on CI.
+    trace: 'on-first-retry',
+
+    //  Set a default timeout for actions (like clicks, fills). 0 means no explicit action timeout.
+    actionTimeout: 0, 
+
+    //  Set a maximum time for page navigations to complete.
+    navigationTimeout: 30000, // 30 seconds should be sufficient for most navigations.
+
+    //  Explicitly define the directory for Playwright's raw test results (traces, videos, screenshots).
+    // This is crucial for GitHub Actions to find and upload them as artifacts.
+    outputDir: 'test-results/', 
+  },
+
+  /**
+   *  Configure different browser projects.
+   * This allows you to run tests across various browsers (Chromium, Firefox, WebKit).
+   */
+  projects: [
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+    },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+    },
+
+    /*
+     *  Uncomment these for mobile viewport testing.
+     * Great for ensuring responsiveness.
      */
-    // require('dotenv').config();
+    // {
+    //   name: 'Mobile Chrome',
+    //   use: { ...devices['Pixel 5'] },
+    // },
+    // {
+    //   name: 'Mobile Safari',
+    //   use: { ...devices['iPhone 12'] },
+    // },
 
-    /**
-     * @see https://playwright.dev/docs/test-configuration
+    /*
+     *  Uncomment these for testing against branded browsers like Edge or Chrome.
+     * Useful if your users primarily use these specific browsers.
      */
-    export default defineConfig({
-      testDir: './playwright-tests/tests', // Directory where your test files are located
-      /* Run tests in files in parallel */
-      fullyParallel: true,
-      /* Fail the build on CI if you accidentally left test.only in the source code. */
-      forbidOnly: !!process.env.CI,
-      /* Retry on CI only */
-      retries: process.env.CI ? 2 : 0,
-      /* Opt out of parallel tests on CI. */
-      workers: process.env.CI ? 1 : undefined,
-      /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-      reporter: 'html', // Generates an HTML report after tests run
-      /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
-      use: {
-        /* Base URL to use in actions like `await page.goto('/')`. */
-        baseURL: 'http://localhost:5173/', // Our React app's default port for Vite http://localhost:5173/
+    // {
+    //   name: 'Microsoft Edge',
+    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
+    // },
+    // {
+    //   name: 'Google Chrome',
+    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+    // },
+  ],
 
-        /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-        trace: 'on-first-retry',
-        /* Set a default timeout for assertions */
-        actionTimeout: 0, // No action timeout, let test timeout handle it
-        navigationTimeout: 30000, // 30 seconds for navigation
-      },
+  /**
+   *  Use 'webServer' to automatically start your application before tests run.
+   * Playwright will wait for the URL to be reachable.
+   */
+  webServer: {
+    //  The command to start your React application.
+    command: 'npm run dev', 
 
-      /* Configure projects for major browsers */
-      projects: [
-        {
-          name: 'chromium',
-          use: { ...devices['Desktop Chrome'] },
-        },
+    //  The URL Playwright will wait for to confirm the app is running.
+    url: 'http://localhost:5173', 
 
-        {
-          name: 'firefox',
-          use: { ...devices['Desktop Firefox'] },
-        },
+    //  Maximum time Playwright will wait for the server to start.
+    timeout: 120 * 1000, // 120 seconds should be generous enough.
 
-        {
-          name: 'webkit',
-          use: { ...devices['Desktop Safari'] },
-        },
+    //  Reuse an existing server if running locally (not on CI) to speed up local development.
+    reuseExistingServer: !process.env.CI, 
 
-        /* Test against mobile viewports. */
-        // {
-        //   name: 'Mobile Chrome',
-        //   use: { ...devices['Pixel 5'] },
-        // },
-        // {
-        //   name: 'Mobile Safari',
-        //   use: { ...devices['iPhone 12'] },
-        // },
-
-        /* Test against branded browsers. */
-        // {
-        //   name: 'Microsoft Edge',
-        //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-        // },
-        // {
-        //   name: 'Google Chrome',
-        //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-        // },
-      ],
-
-      /* Run your local dev server before starting the tests */
-      webServer: {
-        command: 'npm run dev', // Command to start your React app
-        url: 'http://localhost:5173', // URL your React app will be running on
-        timeout: 120 * 1000, // Give it 120 seconds to start
-        reuseExistingServer: !process.env.CI, // Reuse server if not on CI
-        cwd: './react-app', // IMPORTANT: Specify the directory where 'npm run dev' should be executed
-      },
-    });
-    
+    //  Crucially, specify the directory where the 'command' should be executed.
+    cwd: './react-app', 
+  },
+});
