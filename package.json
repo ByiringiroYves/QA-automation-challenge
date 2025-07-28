@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "test:ui": "npx playwright test",
     "test:api": "mocha api-tests/**/*.test.js --timeout 10000 --exit",
-    "coverage": "nyc --reporter=lcov --reporter=text npm run test:api"
+    "coverage": "nyc --reporter=lcov --reporter=text npm run test:api",
+    "start": "node server.js" 
   },
   "keywords": [],
   "author": "",
