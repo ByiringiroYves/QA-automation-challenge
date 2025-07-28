@@ -52,7 +52,30 @@ jobs:
           PORT: 5000
 
       - name: Run UI Tests
-        run: npm run test:ui
+        run: npm run test:ui]]
+      
+      - name: Debug: List Workspace Contents After UI Tests
+            run: |
+              echo "Listing contents of current directory:"
+              ls -la
+              echo "Listing contents of test-results/ (if exists):"
+              ls -la test-results/ || echo "test-results/ does not exist or is empty."
+              echo "Listing contents of playwright-report/ (if exists):"
+              ls -la playwright-report/ || echo "playwright-report/ does not exist or is empty."
+              echo "Listing contents of playwright-tests/ (if exists):"
+              ls -la playwright-tests/ || echo "playwright-tests/ does not exist or is empty."
+              echo "Listing contents of react-app/ (if exists):"
+              ls -la react-app/ || echo "react-app/ does not exist or is empty."
+              echo "Listing contents of node-backend/ (if exists):"
+              ls -la node-backend/ || echo "node-backend/ does not exist or is empty."
+              echo "Listing ALL contents recursively:"
+              ls -R
+
+
+
+
+
+
 
       - name: Run API Tests
         run: npm run test:api
