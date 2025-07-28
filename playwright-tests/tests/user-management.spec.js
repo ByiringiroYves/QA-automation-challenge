@@ -124,7 +124,7 @@
         const userToKeep = { name: 'Charlie Brown', email: 'charlie@example.com', role: 'User' };
 
         await test.step('Click Delete for a user, then cancel deletion', async () => {
-          await userListPage.clickDeleteUser(userToKeep);
+          await userListPage.clickDeleteUser(userToKeep.name);
           await userListPage.cancelDelete();
         });
 
