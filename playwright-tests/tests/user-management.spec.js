@@ -1,6 +1,6 @@
 // tests/user-management.spec.js
 const { test, expect } = require('@playwright/test');
-const { UserListPage } = require('../UserListPage');
+const { UserListPage } = require('../page-objects/UserListPage');
 
 test.describe('User Management CRUD', () => {
   let userPage;
