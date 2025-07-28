@@ -98,18 +98,16 @@ app.put('/items/:id', authenticateToken, (req, res) => {
       updatedUser.role = role;
   }
 
-  // --- VALIDATION FOR UPDATED USER DATA ---
+
   // 1. Basic validation for required fields (after applying updates)
   if (!updatedUser.name || !updatedUser.email) {
     return res.status(400).json({ message: 'Name and email are required' });
   }
 
   // 2. Check for email conflict (only if email was provided in the request body OR if the email changed)
-  //    This check should use the *new* email value.
   if (email !== undefined && users.some(u => u.email === updatedUser.email && u.id !== id)) {
     return res.status(409).json({ message: 'User with this email already exists' });
   }
-  // --- END VALIDATION ---
 
   users[userIndex] = updatedUser; // Update the user in the array
   res.status(200).json({ message: 'User updated successfully', user: users[userIndex] });

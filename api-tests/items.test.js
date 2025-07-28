@@ -109,7 +109,7 @@
       });
 
       it('PUT /items/:id - Negative test case ==> should return 409 for duplicate email when updating user', async () => {
-        // Create a temporary user to cause a conflict
+        // Creating a temporary user to cause a conflict
         const tempUser = { name: 'Temp', email: 'temp@example.com', role: 'User' };
         const createRes = await request(app)
           .post('/items')

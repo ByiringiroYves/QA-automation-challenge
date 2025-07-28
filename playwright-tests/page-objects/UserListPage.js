@@ -16,9 +16,9 @@
 
     // Modals and Form elements (reused for Add/Edit)
       this.modalTitle = page.locator('.fixed.inset-0 h3'); // Title of the modal (Add New User / Edit User)
-      this.userNameInput = page.locator('#name'); // Name input in modal
-      this.userEmailInput = page.locator('#email'); // Email input in modal
-      this.userRoleSelect = page.locator('#role'); // Role select in modal
+      this.userNameInput = page.locator('#name'); 
+      this.userEmailInput = page.locator('#email'); 
+      this.userRoleSelect = page.locator('#role'); 
 
     // UPDATED LOCATOR: Target the submit button specifically within the active modal
       this.saveUserButton = page.locator('.fixed.inset-0.bg-gray-600 .bg-white button[type="submit"]');

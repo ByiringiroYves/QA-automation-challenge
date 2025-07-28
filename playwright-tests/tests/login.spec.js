@@ -46,8 +46,6 @@
 
       test('should display an error message for empty credentials', async ({ page }) => {
         await test.step('Attempt to login with empty username and password', async () => {
-          // Note: The React app's simulated API will return 'Invalid credentials' for empty inputs.
-          // If you want client-side validation to show a different message, that needs to be added to the React app.
           await loginPage.login('', '');
         });
 
