@@ -7,70 +7,70 @@ on:
     branches:
       - main
       - develop
-  pull_request: # This should be at the same indentation level as 'push'
+  pull_request:
     branches:
       - main
       - develop
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest # Use the latest Ubuntu runner
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4 # Action to checkout your code
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '20' # Use Node.js version 20 (or match your local version)
 
       - name: Install Root Dependencies
-        run: npm install
+        run: npm install # Installs Playwright, Mocha, Chai, Supertest from root package.json
 
       - name: Install Backend Dependencies
         run: npm install
-        working-directory: ./node-backend
+        working-directory: ./node-backend # Run npm install in the node-backend directory
 
       - name: Install Frontend Dependencies
         run: npm install
-        working-directory: ./react-app
+        working-directory: ./react-app # Run npm install in the react-app directory
 
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+        run: npx playwright install --with-deps # Installs browsers and their system dependencies
 
       - name: Start Backend API (for all tests)
         run: |
-          export PORT=5000
-          nohup npm start > backend.log 2>&1 &
+          export PORT=5000 # Ensure the backend runs on the expected port
+          nohup npm start > backend.log 2>&1 & # Use npm start if defined, or node server.js directly
           echo "Backend PID: $!" > backend_pid.txt
           echo "Waiting for backend to start on port $PORT..."
-          curl --fail --retry 10 --retry-delay 5 http://localhost:$PORT/items || (echo "Backend not ready after multiple retries!" && cat backend.log && exit 1)
+          # Wait for the backend to be truly ready
+          curl --fail --retry 10 --retry-delay 5 http://localhost:$PORT/items > /dev/null 2>&1 || (echo "Backend not ready after multiple retries!" && cat backend.log && exit 1)
           echo "Backend is ready."
-        working-directory: ./node-backend
+        working-directory: ./node-backend # IMPORTANT: Run this from the backend directory
         env:
-          PORT: 5000
+          PORT: 5000 # This sets the environment variable for server.js to use.
 
       - name: Run UI Tests
-        run: npm run test:ui
-      
-      - name: Debug: List Workspace Contents After UI Tests
-            run: |
-              echo "Listing contents of current directory:"
-              ls -la
-              echo "Listing contents of test-results/ (if exists):"
-              ls -la test-results/ || echo "test-results/ does not exist or is empty."
-              echo "Listing contents of playwright-report/ (if exists):"
-              ls -la playwright-report/ || echo "playwright-report/ does not exist or is empty."
-              echo "Listing contents of playwright-tests/ (if exists):"
-              ls -la playwright-tests/ || echo "playwright-tests/ does not exist or is empty."
-              echo "Listing contents of react-app/ (if exists):"
-              ls -la react-app/ || echo "react-app/ does not exist or is empty."
-              echo "Listing contents of node-backend/ (if exists):"
-              ls -la node-backend/ || echo "node-backend/ does not exist or is empty."
-              echo "Listing ALL contents recursively:"
-              ls -R
+        run: npm run test:ui # Corrected: Removed the extra ']]'
 
+      - name: Debug: List Workspace Contents After UI Tests
+        run: |
+          echo "Listing contents of current directory:"
+          ls -la
+          echo "Listing contents of test-results/ (if exists):"
+          ls -la test-results/ || echo "test-results/ does not exist or is empty."
+          echo "Listing contents of playwright-report/ (if exists):"
+          ls -la playwright-report/ || echo "playwright-report/ does not exist or is empty."
+          echo "Listing contents of playwright-tests/ (if exists):"
+          ls -la playwright-tests/ || echo "playwright-tests/ does not exist or is empty."
+          echo "Listing contents of react-app/ (if exists):"
+          ls -la react-app/ || echo "react-app/ does not exist or is empty."
+          echo "Listing contents of node-backend/ (if exists):"
+          ls -la node-backend/ || echo "node-backend/ does not exist or is empty."
+          echo "Listing ALL contents recursively:"
+          ls -R
 
       - name: Run API Tests
         run: npm run test:api
@@ -84,19 +84,20 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: code-coverage-report
-          path: coverage/
-        if: always()
+          path: coverage/ # nyc generates coverage reports in a 'coverage' folder by default
+        if: always() # Uploads even if tests or coverage generation fails
+      # --- END CODE COVERAGE ---
 
       - name: Upload Playwright Test Results
-        if: always()
+        if: always() # Uploads even if tests fail
         uses: actions/upload-artifact@v4
         with:
           name: playwright-test-results
-          path: test-results/
+          path: test-results/ # Path to Playwright's test results directory
 
       - name: Upload Playwright HTML Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-html-report
-          path: playwright-report/
+          path: playwright-report/ # Path to Playwright's HTML report directory
