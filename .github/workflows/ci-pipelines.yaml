@@ -1,93 +1,94 @@
-    # .github/workflows/ci-pipeline.yml
+# .github/workflows/ci-pipeline.yml
 
-    name: CI/CD Test Pipeline
+name: CI/CD Test Pipeline
 
-    on:
-      push:
-        branches:
-          - main
-          - develop
-      pull_request:
-        branches:
-          - main
-          - develop
+on:
+  push:
+    branches:
+      - main
+      - develop
+    pull_request: 
+    branches:
+      - main
+      - develop
 
-    jobs:
-      build-and-test:
-        runs-on: ubuntu-latest # Use the latest Ubuntu runner
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest 
 
-        steps:
-          - name: Checkout Repository
-            uses: actions/checkout@v4 # Action to checkout your code
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4 
 
-          - name: Set up Node.js
-            uses: actions/setup-node@v4
-            with:
-              node-version: '20' # Use Node.js version 20 (or match your local version)
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' 
 
-          - name: Install Root Dependencies
-            run: npm install # Installs Playwright, Mocha, Chai, Supertest from root package.json
+      - name: Install Root Dependencies
+        run: npm install # Good: Installs top-level devDependencies
 
-          - name: Install Backend Dependencies
-            run: npm install
-            working-directory: ./node-backend # Run npm install in the node-backend directory
+      - name: Install Backend Dependencies
+        run: npm install
+        working-directory: ./node-backend # Good: Installs backend-specific dependencies
 
-          - name: Install Frontend Dependencies
-            run: npm install
-            working-directory: ./react-app # Run npm install in the react-app directory
+      - name: Install Frontend Dependencies
+        run: npm install
+        working-directory: ./react-app # Good: Installs frontend-specific dependencies
 
-          - name: Install Playwright Browsers
-            run: npx playwright install --with-deps # Installs browsers and their system dependencies
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps # Good: Installs browsers and system dependencies
 
-          - name: Start Backend API
-            run: npm start # Or node server.js if you prefer
-            working-directory: ./node-backend
-            env:
-              PORT: 5000 
+      - name: Start Backend API (for all tests)
+        run: |
+          # The 'npm start' command in node-backend/package.json should be 'node server.js'
+          # This command needs to run in the background. 'nohup' and '&' are for this.
+          # We export the PORT variable so server.js can pick it up.
+          export PORT=5000 # Make sure this matches your server.js and Playwright config if it's external
+          nohup npm start > backend.log 2>&1 & # Use npm start if defined, or node server.js directly
+          # Capture PID to ensure it can be killed later if needed (though GitHub Actions cleans up)
+          echo "Backend PID: $!" > backend_pid.txt
+          echo "Waiting for backend to start on port $PORT..."
+          # Wait until the /items endpoint (which requires auth but confirms server is up) is reachable
+          curl --fail --retry 10 --retry-delay 5 http://localhost:$PORT/items || (echo "Backend not ready after multiple retries!" && cat backend.log && exit 1)
+          echo "Backend is ready."
+        working-directory: ./node-backend # IMPORTANT: Run this from the backend directory
+        env:
+          PORT: 5000
 
-          - name: Start Node.js Backend API (for UI tests)
-            run: |
-              nohup node node-backend/server.js > backend.log 2>&1 &
-              echo $! > backend_pid.txt
-              echo "Waiting for backend to start..."
-              # Wait for the backend to be truly ready
-              # You might need to install 'wait-on' or just use a simple sleep for this simple app
-              # npm install -g wait-on (not ideal for CI)
-              # Let's use a simple sleep for now, or curl check
-              sleep 5 # Give backend 5 seconds to start
-              curl --retry 5 --retry-delay 1 http://localhost:3001/items > /dev/null 2>&1 || (echo "Backend not ready!" && cat backend.log && exit 1)
-            env:
-              PORT: 3001 # Ensure the backend runs on the expected port
-
-          - name: Run UI Tests
-            run: npm run test:ui
-
-          - name: Run API Tests
-            run: npm run test:api
-
-            # CODE COVERAGE ---
-          - name: Generate Code Coverage Report
-            run: npm run coverage
-            if: always()
-
-          - name: Upload Code Coverage Report
-            uses: actions/upload-artifact@v4
-            with:
-              name: code-coverage-report
-              path: coverage/ # nyc to generates coverage reports in a 'coverage' folder by default
-            if: always() # Uploads even if tests or coverage generation fails
       
 
-          - name: Upload Playwright Test Results
-            if: always() # Uploads even if tests fail
-            uses: actions/upload-artifact@v4
-            with:
-              name: playwright-test-results
-              path: test-results/ # Path to Playwright's test results directory
+      - name: Run UI Tests
+        # Playwright's webServer config (in playwright.config.js) will start the React app for these tests.
 
-          - name: Upload Playwright HTML Report
-            if: always()
-            uses: actions/upload-artifact@v4
-            with:
-              name: playwright-html-report
-              path: playwright-report/ # Path to Playwright's HTML report directory
+        run: npm run test:ui
+
+      - name: Run API Tests
+
+        run: npm run test:api
+
+      # CODE COVERAGE ---
+      - name: Generate Code Coverage Report
+        run: npm run coverage
+        if: always() # Good: Ensures coverage is attempted even if other tests fail
+
+      - name: Upload Code Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-coverage-report
+          path: coverage/ # Good: Standard path for nyc coverage reports
+        if: always() # Good: Uploads even if coverage generation or previous steps fail
+
+      - name: Upload Playwright Test Results
+        if: always() # Good: Uploads even if tests fail
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-results
+          path: test-results/ # Good: Path to Playwright's test results directory
+
+      - name: Upload Playwright HTML Report
+        if: always() # Good: Uploads even if tests fail
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-html-report
+          path: playwright-report/ # Good: Path to Playwright's HTML report directory
