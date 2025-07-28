@@ -76,7 +76,7 @@ jobs:
         run: npm run test:ui
 
       - name: Run API Tests
-        run: npm run test:api
+        run: npm run test:api -- --update-snapshots
 
       # CODE COVERAGE ---
       - name: Generate Code Coverage Report
