@@ -73,7 +73,7 @@ jobs:
           PORT: 5000 # Ensure this matches the port your backend listens on
 
       - name: Run UI Tests
-        run: npm run test:ui 
+        run: npm run test:ui -- --update-snapshots 
 
       - name: Run API Tests
         run: npm run test:api
