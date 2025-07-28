@@ -52,7 +52,7 @@ jobs:
           PORT: 5000
 
       - name: Run UI Tests
-        run: npm run test:ui]]
+        run: npm run test:ui
       
       - name: Debug: List Workspace Contents After UI Tests
             run: |
@@ -70,11 +70,6 @@ jobs:
               ls -la node-backend/ || echo "node-backend/ does not exist or is empty."
               echo "Listing ALL contents recursively:"
               ls -R
-
-
-
-
-
 
 
       - name: Run API Tests
