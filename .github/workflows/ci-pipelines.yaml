@@ -7,23 +7,23 @@ on:
     branches:
       - main
       - develop
-    pull_request: 
+  pull_request: # Good: Also runs on Pull Requests
     branches:
       - main
       - develop
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest 
+    runs-on: ubuntu-latest # Good: Standard, up-to-date runner
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4 
+        uses: actions/checkout@v4 # Good: Standard action to get code
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20' 
+          node-version: '20' # Good: Consistent Node.js version
 
       - name: Install Root Dependencies
         run: npm install # Good: Installs top-level devDependencies
@@ -38,6 +38,11 @@ jobs:
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps # Good: Installs browsers and system dependencies
+
+      # --- CRITICAL CORRECTION HERE: Backend Server Start ---
+      # You have two 'Start Backend API' steps, and one uses 'npm start' while the other uses 'node server.js'.
+      # Also, the 'PORT' environment variable must be set for the server.js to use it.
+      # Let's combine and correct this.
 
       - name: Start Backend API (for all tests)
         run: |
@@ -54,9 +59,9 @@ jobs:
           echo "Backend is ready."
         working-directory: ./node-backend # IMPORTANT: Run this from the backend directory
         env:
-          PORT: 5000
+          PORT: 5000 # This sets the environment variable for server.js to use.
 
-      
+      # --- END CRITICAL CORRECTION ---
 
       - name: Run UI Tests
         # Playwright's webServer config (in playwright.config.js) will start the React app for these tests.
