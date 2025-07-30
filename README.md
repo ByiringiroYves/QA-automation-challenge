@@ -1,4 +1,4 @@
-# REMWASTE User Management Automation Challenge
+# REMWASTE User Management Test Automation Challenge
 
 This repository contains a solution for the QA Engineer (Automation Specialist) Challenge. It features a simple React frontend, a Node.js Express backend API, and comprehensive automated tests covering both UI and API functionalities, integrated with a CI/CD pipeline.
 
